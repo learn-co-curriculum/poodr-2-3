@@ -1,5 +1,5 @@
 # POODR
-#### Chapter 2: Designing Classes with a Single Responsibility
+## Chapter 2: Designing Classes with a Single Responsibility
 - basics of OO
   - foundation is message
   - organizational structure is the class
