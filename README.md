@@ -1,4 +1,5 @@
-# POODR - Chapter 2: Designing Classes with a Single Responsibility
+# POODR
+#### Chapter 2: Designing Classes with a Single Responsibility
 - basics of OO
   - foundation is message
   - organizational structure is the class
@@ -6,7 +7,7 @@
   - make your application do what it is supposed to right now
   - make your code easy to change later
   
-## Deciding What Belongs in a Class
+#### Deciding What Belongs in a Class
 - grouping methods together into classes affects how your application can grow later
 - `Design is more the art of preserving changeability than it is the act of achieving perfection`
 - organize your code to allow for easy change, which means:
@@ -20,7 +21,7 @@
   - useable: existing could should be usable in new contexts
   - exemplary: code should encourage others to perpetuate these qualities
 
-## Creating Classes That Have a Single Responsibility
+#### Creating Classes That Have a Single Responsibility
 - a class should do the smallest possible useful thing
 - bicycle example:
   - bicycles have gears (slow but easy and hard but fast)
@@ -35,7 +36,7 @@
   - bicycles with same gearing can have different wheel sizes (bigger wheels travel farther per rotation)
     - gear inches(meth) = wheel diameter * gear ratio
     - wheel diameter(meth) = rim diameter(attr) + twice tire diameter(attr)
-  - gears now require additional args to initialize => preexisting code breaks
+  - gears now require additional args to initialize so preexisting code breaks
 - SRP matters because code is easier to reuse and less likely to break
   - `Reusable classes are pluggable units of well-defined behavior that have few entanglements.`
     - an app should be like a box of blocks you can select and assemble
@@ -60,7 +61,7 @@
   - minimize costs by making informed tradeoffs between needs of present and possibilities of the future
   - we don't know enough about our future app to decide about gear
   
-## Writing Code That Embraces Change
+#### Writing Code That Embraces Change
 - depend on behavior, not data
   - behavior should live in only one place
     - DRY code tolerates change because you only have to update it once
@@ -81,12 +82,87 @@
   - benefits:
     - expose previously hidden qualities
       - gear calculating wheel diameter suggests wheel should own the behavior
-      - new request for bicycle wheel circumference => wheel deserves a class
+      - new request for bicycle wheel circumference suggests wheel deserves a class
     - clear method names reduce comments
     - encourages reuse
     - easier to move small methods
 
-## Summary
+#### Summary
 - changeable and maintainable OO code begins with SRP classes
 - classes can isolate their single responsibility from the rest of the app
 - isolation allows change without consequence and reuse without duplication
+
+
+## Chapter 3: Managing Dependencies
+- OO claims to be effective because it models reality
+  - objects reflect qualities of a real-world problem
+  - object interactions provide solutions
+  - objects must collaborate to get more information
+- messages are objects invoking behavior from:
+  - themselves (chapter 2)
+  - inheriting it (chapter 6)
+  - another object (right now!)
+  
+#### Understanding Dependencies
+- an object is dependent when:
+  - it knows the name of another class
+  - the name of a message it sends to another instance
+  - the arguments a message requires
+  - the order of arguments
+- dependencies mean a change to one class requires change to another class
+- each class should know just enough to do its job
+- coupling between objects (CBO)
+  - gear couples to wheel so it is difficult to reuse without wheel
+- message chaining couples every object on the path
+- coupling tests too tightly to code makes testing expensive
+
+#### Writing Loosely Coupled Code
+- dependency injection
+  - instead of gear knowing about wheel class, have it know a specific object
+  - hard-coding a classname limits collaboration to only that class
+  - attachment to type over message
+    - duck-typing: we only care what messages the object responds to
+    - gear only cares if the object has a diameter
+- isolate dependencies
+  - isolate instance creation
+    - inject to break dependency if possible
+    - move any dependency creation to initialize to better expose it
+    - lazy create in its own method 
+  - isolate vulnerable external messages
+    - encapsulate in their own methods
+- remove argument order dependencies by using keyword arguments
+  - can pass in any order 
+  - can add or remove arguments and defaults with no worries of side effects
+  - pay for this future flexibility with verbosity
+  - gained dependency on keyword names
+  - okay to mix and match in an application
+- isolate multi-parameter initialization with factories
+  - if you can't avoid positional args, make a wrapper method to DRY it
+    - use a module to make it clear the wrapper does not have instances
+    
+#### Managing Dependency Direction
+- choosing dependency direction to depend on things that change less
+  - some classes are more likely to have changes
+  - concrete classes are more likely to change then abstract
+  - changing a class with more dependents will result in more consequences
+- understanding the likelihood of change
+  - ruby bas classes change less often than your own
+  - framework classes (for stable frameworks) will change less often than your own
+- recognizing concretions and abstractions
+  - we abstracted gear to depend not on a wheel but on a diameter message
+    - created an interface that is an abstraction of an idea that a category of items have diameters
+  - abstractions represent common qualities less likely to change
+- dependent-laden classes are rigid because they are under pressure not to change
+- finding the dependencies that matter 
+  - A - abstract zone: changes unlikely but have broad effects
+  - B - neutral zone: changes unlikely and have few side effects
+  - C - neutral zone: changes likely and have few side effects
+  - D - danger zone: changes likely and will cascade 
+    - costly and difficult to change
+    
+#### Summary
+- dependency management is core to creating future-proof apps
+- inject dependencies creates loosely-coupled objects that can be reused
+- isolating dependencies allows objects to adapt
+- depending on abstractions decreases the likelihood of change
+- classes should depend on code that changes less often than it
